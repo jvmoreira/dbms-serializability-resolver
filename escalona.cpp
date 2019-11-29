@@ -11,7 +11,8 @@ int main() {
          << "Leitura de Transações" << '\n'
          << "=====================" << "\n\n";
 
-    //SerializabilityResolver *solver = new SerializabilityResolver(cin);
+    // SerializabilityResolver *solver = new SerializabilityResolver(cin);
+    SerializabilityResolver solver(cin);
     // Transaction *T = solver->findById(2);
     // T->printOperations();
 

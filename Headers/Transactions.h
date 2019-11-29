@@ -36,21 +36,21 @@ public:
     }
 };
 
-// class Transaction {
-//     unsigned int id;
-//     vector<Operation> operations;
-// public:
-//     Transaction(Operation* op) { this->id = op->getId(); this->addOp(op); }
-//     unsigned int getId() { return this->id; }
-//     void addOp(Operation* op) { operations.push_back(*op); }
-//     vector<Operation>::iterator opList() { return this->operations.begin(); }
-//     vector<Operation>::iterator listEnd() { return this->operations.end(); }
-//     void printOperations() { // === REMOVER ===
-//         for(vector<Operation>::iterator op = this->opList(); op != this->listEnd(); ++op)
-//             op->printOperation();
-//     }
-// };
-//
+class Transaction {
+    unsigned int id;
+    vector<Operation> operations;
+public:
+    Transaction(Operation* op) { this->id = op->getId(); this->addOp(op); }
+    unsigned int getId() { return this->id; }
+    void addOp(Operation* op) { operations.push_back(*op); }
+    vector<Operation>::iterator opList() { return this->operations.begin(); }
+    vector<Operation>::iterator listEnd() { return this->operations.end(); }
+    void printOperations() { // === REMOVER ===
+        for(vector<Operation>::iterator op = this->opList(); op != this->listEnd(); ++op)
+            op->printOperation();
+    }
+};
+
 
 
 // ===================================================
@@ -58,10 +58,12 @@ public:
 
 class Schedule {
     vector<unsigned int> transactionsIds;
-    bool serializable;
+    bool conflictSerial;
+    bool viewEquivalent;
 public:
     Schedule(vector<unsigned int> ids);
-    void isSerializable() { this->serializable = true; }
+    void setConflictSerial(bool b) { this->conflictSerial = b; }
+    void setViewEquivalent(bool b) { this->viewEquivalent = b; }
     void addTransaction(unsigned int id) { this->transactionsIds.push_back(id); }
 };
 
@@ -73,22 +75,13 @@ public:
 
 class ConflictTester {
     vector<Operation> operations;
+    vector<Transaction> transactions;
     vector<unsigned int> activeTransactionsIds;
     vector<unsigned int> finalizedTransactionsIds;
     vector<Schedule> schedules;
 
 public:
     bool isActive(unsigned int id);
+    Transaction* findTransactionById(unsigned int id);
     void newOp(Operation* op);
 };
-
-// class ViewTester {
-//     vector<Operation> operations;
-//     vector<unsigned int> activeTransactionsIds;
-//     vector<unsigned int> finalizedTransactionsIds;
-//     vector<Schedule> schedules;
-//
-// public:
-//     bool isActive(unsigned int id);
-//     void newOp(Operation* op);
-// };

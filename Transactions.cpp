@@ -24,7 +24,6 @@ Operation::Operation(string operationDef) {
 // ====== Schedule ===================================
 
 Schedule::Schedule(vector<unsigned int> ids) {
-    this->serializable = false;
     // Cria schedule com os ids
     for(unsigned int i = 0; i < ids.size(); ++i)
         this->transactionsIds.push_back(ids[i]);
@@ -35,7 +34,6 @@ Schedule::Schedule(vector<unsigned int> ids) {
 // ===================================================
 // ====== ConflictTester =============================
 
-
 // Verifica se existe uma transação ativa com determinado id
 bool ConflictTester::isActive(unsigned int id) {
     for(unsigned int i = 0; i < this->activeTransactionsIds.size(); ++i)
@@ -44,8 +42,27 @@ bool ConflictTester::isActive(unsigned int id) {
     return false;
 }
 
+// Encontra transação pelo id
+Transaction* ConflictTester::findTransactionById(unsigned int id) {
+    for(unsigned int i = 0; i < this->transactions.size(); ++i) {
+        if(this->transactions[i].getId() == id)
+            return &(this->transactions[i]);
+    }
+    return 0;
+};
+
 // Função chamada ao receber uma nova operação
 void ConflictTester::newOp(Operation* op) {
+
+    // Verifica se a transação já existe
+    Transaction* T = this->findTransactionById(op->getId());
+    // Caso exista, adiciona operação
+    if(T) T->addOp(op);
+    else { // Caso não exista, cria nova
+        Transaction *T = new Transaction(op);
+        this->transactions.push_back(*T);
+    }
+
     // Verifica se é diferente de commit
     if(op->getAction() != COMMIT) {
         // Se não for uma transação ativa, adiciona à lista
