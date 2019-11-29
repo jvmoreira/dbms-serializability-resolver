@@ -1,15 +1,17 @@
 // ====================================================
 // >> UFPR 2019 - João Vitor Moreira - GRR20171621 <<
+// >> UFPR 2019 - Igor Segalla Farias - GRR20176543 <<
 // ====================================================
 
-#ifndef __TRANSACTIONS_MODULE__
-#define __TRANSACTIONS_MODULE__
+#pragma once
 
 #include <iostream>
 #include <string>
 #include <sstream>
 #include <vector>
+
 using namespace std;
+
 #define READ 'R'
 #define WRITE 'W'
 #define COMMIT 'C'
@@ -90,6 +92,3 @@ public:
 //     bool isActive(unsigned int id);
 //     void newOp(Operation* op);
 // };
-
-
-#endif

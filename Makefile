@@ -1,5 +1,6 @@
 # ====================================================
 # >> UFPR 2019 - João Vitor Moreira - GRR20171621 <<
+# >> UFPR 2019 - Igor Segalla Farias - GRR20176543 <<
 # ====================================================
 
 LINK.o = $(LINK.cc)
@@ -11,7 +12,8 @@ EXEC = escalona
 # Arquivos que serão compilados (sem a extensão)
 ARQUIVOS =	$(EXEC)				\
 			SerializabilityResolver	\
-			Transactions
+			Transactions 	\
+			Graph
 
 #Arquivos .o
 OBJETOS = $(addsuffix .o, $(ARQUIVOS))

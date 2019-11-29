@@ -1,9 +1,9 @@
 // ====================================================
 // >> UFPR 2019 - João Vitor Moreira - GRR20171621 <<
+// >> UFPR 2019 - Igor Segalla Farias - GRR20176543 <<
 // ====================================================
 
-#ifndef __SERIALIZABILITY_RESOLVER__
-#define __SERIALIZABILITY_RESOLVER__
+#pragma once
 
 #include "Transactions.h"
 
@@ -20,5 +20,3 @@ public:
     //     return T;
     // }
 };
-
-#endif
