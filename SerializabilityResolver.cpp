@@ -22,6 +22,8 @@ void SerializabilityResolver::writeSchedules(ostream& output) {
     int cont = 1;
     for( auto& schedule : this->tester->getSchedules() ) {
 
+        sort( schedule->transactionsIds.begin(), schedule->transactionsIds.end() );
+
         stringstream s;
         for( unsigned int i = 0; i < schedule->getTransactionIds().size(); i++ )
             s << schedule->getTransactionIds()[i] << (i == schedule->getTransactionIds().size()-1 ? "" : ",");

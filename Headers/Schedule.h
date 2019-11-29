@@ -23,8 +23,9 @@ public:
     vector<unsigned int> getTransactionIds() const{ return transactionsIds; }
     void addTransaction(unsigned int id) { this->transactionsIds.push_back(id); }
     stringstream outputString();
+
+    vector<unsigned int> transactionsIds;
 private:
 	bool conflictSerial;
     bool viewEquivalent;
-    vector<unsigned int> transactionsIds;
 };
