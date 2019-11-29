@@ -52,7 +52,6 @@ public:
 };
 
 
-
 // ===================================================
 // ====== Schedule ===================================
 
@@ -68,12 +67,10 @@ public:
 };
 
 
-
-
 // ===================================================
-// ====== ConflictTester =============================
+// ====== Tester =============================
 
-class ConflictTester {
+class Tester {
     vector<Operation> operations;
     vector<Transaction> transactions;
     vector<unsigned int> activeTransactionsIds;

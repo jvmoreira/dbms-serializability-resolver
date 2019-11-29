@@ -32,10 +32,10 @@ Schedule::Schedule(vector<unsigned int> ids) {
 
 
 // ===================================================
-// ====== ConflictTester =============================
+// ====== Tester =====================================
 
 // Verifica se existe uma transação ativa com determinado id
-bool ConflictTester::isActive(unsigned int id) {
+bool Tester::isActive(unsigned int id) {
     for(unsigned int i = 0; i < this->activeTransactionsIds.size(); ++i)
         if(this->activeTransactionsIds[i] == id)
             return true;
@@ -43,7 +43,7 @@ bool ConflictTester::isActive(unsigned int id) {
 }
 
 // Encontra transação pelo id
-Transaction* ConflictTester::findTransactionById(unsigned int id) {
+Transaction* Tester::findTransactionById(unsigned int id) {
     for(unsigned int i = 0; i < this->transactions.size(); ++i) {
         if(this->transactions[i].getId() == id)
             return &(this->transactions[i]);
@@ -52,7 +52,7 @@ Transaction* ConflictTester::findTransactionById(unsigned int id) {
 };
 
 // Função chamada ao receber uma nova operação
-void ConflictTester::newOp(Operation* op) {
+void Tester::newOp(Operation* op) {
 
     // Verifica se a transação já existe
     Transaction* T = this->findTransactionById(op->getId());

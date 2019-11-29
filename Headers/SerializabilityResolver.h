@@ -9,7 +9,7 @@
 
 class SerializabilityResolver {
     // Schedule* schedule;
-    ConflictTester *conflict;
+    Tester *conflict;
 public:
     SerializabilityResolver(istream& transactions);
     // Transaction* findById(unsigned int id) { return this->schedule->findById(id); }

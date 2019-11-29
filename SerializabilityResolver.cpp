@@ -9,7 +9,7 @@
 /* Lê as transições recebidas */
 SerializabilityResolver::SerializabilityResolver(istream& transactions) {
     // this->schedule = new Schedule();
-    this->conflict = new ConflictTester();
+    this->conflict = new Tester();
 
     // A função getline() retorna uma linha de transactions em line
     string t;
