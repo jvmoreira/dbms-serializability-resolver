@@ -1,3 +1,8 @@
+// ====================================================
+// >> UFPR 2019 - João Vitor Moreira - GRR20171621 <<
+// >> UFPR 2019 - Igor Segalla Farias - GRR20176543 <<
+// ====================================================
+
 #include "Operation.h"
 
 Operation::Operation(string operationDef) {

@@ -4,7 +4,7 @@
 # ====================================================
 
 LINK.o = $(LINK.cc)
-CXXFLAGS = -Wall -I Headers # -Wextra -Werror
+CXXFLAGS = -Wall -I Headers -Wextra -Werror
 #LDLIBS
 
 # Nome do executável (contém a main)
