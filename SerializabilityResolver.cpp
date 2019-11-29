@@ -9,23 +9,22 @@
 /* Lê as transições recebidas */
 SerializabilityResolver::SerializabilityResolver(istream& transactions) {
     // this->schedule = new Schedule();
-    this->conflict = new Tester();
+    this->tester = new Tester();
 
     // A função getline() retorna uma linha de transactions em line
     string t;
     while( getline(transactions, t) ) {
         Operation *op = new Operation(t);
-        this->conflict->newOp(op);
-        // this->newOp(op);
+        this->tester->newOp(op);
     }
 }
 
-// void SerializabilityResolver::newOp(Operation* op) {
-//     // this->conflict->newOp(op);
-//     Transaction* T = this->findById(op->getId());
-//     if(T) T->addOp(op);
-//     else {
-//         /*Transaction *T = */this->newTransaction(op);
-//     }
-//
-// }
+void SerializabilityResolver::writeSchedules(ostream& output) {
+    int cont = 1;
+    for( auto& schedule : this->tester->schedules ) {
+        stringstream s;
+        for( auto id : schedule->transactionsIds )
+            s << id << ",";
+        output << cont++ <<  " " << s.str() << " " << schedule->isConflictSerial() << " " << schedule->isViewEquivalent() << endl;
+    }
+}

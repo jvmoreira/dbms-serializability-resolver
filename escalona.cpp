@@ -11,8 +11,8 @@ int main() {
          << "Leitura de Transações" << '\n'
          << "=====================" << "\n\n";
 
-    // SerializabilityResolver *solver = new SerializabilityResolver(cin);
-    SerializabilityResolver solver(cin);
+    SerializabilityResolver *solver = new SerializabilityResolver(cin);
+    solver->writeSchedules(cout);
     // Transaction *T = solver->findById(2);
     // T->printOperations();
 
@@ -38,18 +38,18 @@ int main() {
         T3
     */
 
-    Graph* teste = new Graph();
-    auto node1 = teste->createNode(10);
-    auto node2 = teste->createNode(30);
-    auto node3 = teste->createNode(20);
-    auto node4 = teste->createNode(5);
-
-    node1->addNode(node2);
-    node2->addNode(node3);
-    node3->addNode(node4);
-    node4->addNode(node1);
-
-    printf("Ciclo encontrado: %d\n",teste->findCycle());
+    // Graph* teste = new Graph();
+    // auto node1 = teste->createNode(10);
+    // auto node2 = teste->createNode(30);
+    // auto node3 = teste->createNode(20);
+    // auto node4 = teste->createNode(5);
+    //
+    // node1->addNode(node2);
+    // node2->addNode(node3);
+    // node3->addNode(node4);
+    // node4->addNode(node1);
+    //
+    // printf("Ciclo encontrado: %d\n",teste->findCycle());
 
     return(0);
 }
