@@ -93,7 +93,10 @@ void Tester::newOp(Operation* op) {
         // Remove id da transação da lista de ativas
         for(unsigned int i = 0; i < this->activeTransactionsIds.size(); ++i)
             if(this->activeTransactionsIds[i] == op->getId())
+            {
                 this->activeTransactionsIds.erase( this->activeTransactionsIds.begin() + i );
+                break;
+            }
 
         // Adiciona à lista de finalizadas
         this->finalizedTransactionsIds.push_back(op->getId());
@@ -105,7 +108,7 @@ void Tester::newOp(Operation* op) {
             if(!this->currentGraph->findCycle()) {
                 // Se não há ciclo, então é serializável por conflito
                 s->setConflictSerial(true);
-                
+
                 // Se for serializável por conflito, então também é por visão
                 s->setViewEquivalent(true);
             }
