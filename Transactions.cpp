@@ -142,7 +142,6 @@ void Tester::newOp(Operation* op) {
                                                     if( (*it4)->getTS() != (*it3)->getTS() ) {
                                                         cout << "Não é eqlav\n";
                                                         breakLoop = true;
-                                                        notEquivalent
                                                         break;
                                                     }
                                                 }
@@ -158,7 +157,24 @@ void Tester::newOp(Operation* op) {
                     }
                     // Checa última escrita de cada atributo
                     if(breakLoop) continue;
-                    for( auto it = )
+
+                    // Guarda o TS da ultima OP que escreveu em determinado atributo
+                    unordered_map<char,unsigned int> lastWroteValue;
+                    unordered_map<char,unsigned int> lastWroteValueSerial;
+
+                    // Procura a OP primeiro nas operacoes original
+                    for( const auto& op : operations )
+                        if( op->getAction() == WRITE )
+                            lastWroteValue[op->getAttr()] = op->getTS();
+
+                    // Procura a OP primeiro nas novas operacoes
+                    for( const auto& op : serialOperations )
+                        if( op->getAction() == WRITE )
+                            lastWroteValueSerial[op->getAttr()] = op->getTS();
+
+                    printf("%d\n",lastWroteValue['X']);
+                    printf("%d\n",lastWroteValueSerial['X']);
+                    
                 } while( next_permutation( transactions.begin(), transactions.end() ) );
                 s->setViewEquivalent(true);
             }
