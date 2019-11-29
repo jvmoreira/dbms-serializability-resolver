@@ -117,7 +117,9 @@ void Tester::newOp(Operation* op) {
                 // Se houver ciclo, então não é serializável por conflito
                 s->setConflictSerial(false);
                 // Verifica se é serializável por equivalência de visão
+                bool viewEquivalent = true;
                 do {
+                    // Cria lista de operações com transações em série
                     vector<Operation*> serialOperations;
                     for( auto& T : this->transactions ) {
                         for( auto& op : T->getOperations() )
@@ -159,7 +161,7 @@ void Tester::newOp(Operation* op) {
                     }
                     // Checa última escrita de cada atributo
                     if(breakLoop) {
-                        cout << "Não é eqlav\n";
+                        viewEquivalent = false;
                         continue;
                     }
 
@@ -182,21 +184,26 @@ void Tester::newOp(Operation* op) {
                         if( op->getAction() == WRITE )
                             lastWroteValueSerial[op->getAttr()] = op->getTS();
 
+                    // Itera pelos últimos valores escritos
                     for( const auto& p : lastWroteValue )
-                        if( lastWroteValue[p.first] != lastWroteValueSerial[p.first] )
-                            printf("klabum\n",);
+                        // Caso o último valor escrito no original for diferente do serial, não é equivalente
+                        if( lastWroteValue[p.first] != lastWroteValueSerial[p.first] ) {
+                            viewEquivalent = false;
+                            continue;
+                        }
 
+                        // Geração das permutações das transações
                 } while( next_permutation( transactions.begin(), transactions.end() ) );
-                s->setViewEquivalent(true);
+                s->setViewEquivalent(viewEquivalent);
             }
 
             // Adiciona à lista de saídas
             this->schedules.push_back(s);
             // Limpa grafo e listas
             this->currentGraph->clear();
-            this->finalizedTransactionsIds.clear();
             this->operations.clear();
             this->transactions.clear();
+            this->finalizedTransactionsIds.clear();
         }
     }
 }
