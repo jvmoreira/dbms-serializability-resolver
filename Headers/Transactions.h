@@ -22,6 +22,7 @@ using namespace std;
 // ====== Operation ==================================
 
 class Operation {
+    unsigned int id;
     unsigned int transactionId;
     char action;
     char attribute;
@@ -40,16 +41,17 @@ public:
 
 class Transaction {
     unsigned int id;
-    vector<Operation> operations;
+    vector<Operation*> operations;
 public:
     Transaction(Operation* op) { this->id = op->getId(); this->addOp(op); }
     unsigned int getId() { return this->id; }
-    void addOp(Operation* op) { operations.push_back(*op); }
-    vector<Operation>::iterator opList() { return this->operations.begin(); }
-    vector<Operation>::iterator listEnd() { return this->operations.end(); }
+    void addOp(Operation* op) { operations.push_back(op); }
+    vector<Operation*>::iterator opList() { return this->operations.begin(); }
+    vector<Operation*>::iterator listEnd() { return this->operations.end(); }
+    vector<Operation*> getOperations() { return this->operations; }
     void printOperations() { // === REMOVER ===
-        for(vector<Operation>::iterator op = this->opList(); op != this->listEnd(); ++op)
-            op->printOperation();
+        for(vector<Operation*>::iterator op = this->opList(); op != this->listEnd(); ++op)
+            (*op)->printOperation();
     }
 };
 
@@ -76,8 +78,8 @@ public:
 // ====== Tester =============================
 
 class Tester {
-    vector<Operation> operations;
-    vector<Transaction> transactions;
+    vector<Operation*> operations;
+    vector<Transaction*> transactions;
     vector<unsigned int> activeTransactionsIds;
     vector<unsigned int> finalizedTransactionsIds;
     Graph *currentGraph;

@@ -43,8 +43,8 @@ bool Tester::isActive(unsigned int id) {
 // Encontra transação pelo id
 Transaction* Tester::findTransactionById(unsigned int id) {
     for(unsigned int i = 0; i < this->transactions.size(); ++i) {
-        if(this->transactions[i].getId() == id)
-            return &(this->transactions[i]);
+        if(this->transactions[i]->getId() == id)
+            return this->transactions[i];
     }
     return 0;
 };
@@ -58,7 +58,7 @@ void Tester::newOp(Operation* op) {
     if(T) T->addOp(op);
     else { // Caso não exista, cria nova
         Transaction *T = new Transaction(op);
-        this->transactions.push_back(*T);
+        this->transactions.push_back(T);
         this->currentGraph->createNode(op->getId());
     }
 
@@ -71,21 +71,23 @@ void Tester::newOp(Operation* op) {
 
         // Itera por todas as operações anteriores, verificando se há conflito
         for(unsigned int i = 0; i < this->operations.size(); ++i) {
-            Operation *opIter = &(this->operations[i]);
+            Operation *opIter = this->operations[i];
 
             // Verifica se são transações diferentes e são os mesmos atributos
             if( (op->getId() != opIter->getId()) && (op->getAttr() == opIter->getAttr()) ) {
                 // Verifica se algum dos dois é uma escrita
                 if( (op->getAction() == WRITE) || opIter->getAction() == WRITE ) {
                     // Adiciona aresta de opIter para op
-                    Node *opNode = this->currentGraph->findNode(op->getId());
-                    this->currentGraph->findNode(opIter->getId())->addNode(opNode);
-                    // cout << "Adiciona aresta de " << opIter->getId() << " para " << op->getId() << endl;
+                    Node *opNode = this->currentGraph->findNode( op->getId() );
+                    Node *opIterNode = this->currentGraph->findNode( opIter->getId() );
+                    if( opNode && opIterNode ) {
+                        opIterNode->addNode( opNode );
+                    }
                 }
             }
         }
         // Adiciona operação à lista de operações
-        this->operations.push_back(*op);
+        this->operations.push_back(op);
     }
     // Caso seja um commit
     else {
@@ -105,19 +107,69 @@ void Tester::newOp(Operation* op) {
         if(this->activeTransactionsIds.size() < 1) {
             Schedule *s = new Schedule(this->finalizedTransactionsIds);
             // Verifica se há ciclo
-            if(this->currentGraph->findCycle()) {
+            if(!this->currentGraph->findCycle()) {
+                // Se não há ciclo, então é serializável por conflito
                 s->setConflictSerial(true);
                 // Se for serializável por conflito, então também é por visão
                 s->setViewEquivalent(true);
             }
             else {
+                // Se houver ciclo, então não é serializável por conflito
                 s->setConflictSerial(false);
-                s->setViewEquivalent(false);
+                // Verifica se é serializável por equivalência de visão
+                do {
+                    vector<Operation*> serialOperations;
+                    for( auto& T : this->transactions ) {
+                        for( auto& op : T->getOperations() )
+                            serialOperations.push_back(op);
+                    }
+                    bool breakLoop;
+                    // Itera pelas operações em séries, buscando por operação de leitura
+                    for( auto it = serialOperations.begin(); it != serialOperations.end(); ++it ) {
+                        breakLoop = false;
+                        auto op = *it;
+                        if(op->getAction() == READ) {
+                            // Busca operação correspondente na entrada original
+                            for( auto it2 = operations.begin(); it2 != operations.end(); ++it2 ) {
+                                if( (*it2)->getTS() == op->getTS() ) {
+                                    // Busca primeira escrita do mesmo atributo por transação diferente
+                                    for( auto it3 = it2; it3 != operations.begin()-1; --it3 ) {
+                                        if( ((*it3)->getId() != op->getId()) && ((*it3)->getAttr() == op->getAttr()) && ((*it3)->getAction() == WRITE) ) {
+                                            (*it3)->printOperation();
+                                            // Busca pela escrita no mesmo atributo anterior à op em serialOperations
+                                            for( auto it4 = it; it4 != serialOperations.begin()-1; --it4) {
+                                                if( ((*it4)->getId() != op->getId()) && ((*it4)->getAttr() == op->getAttr()) && ((*it4)->getAction() == WRITE) ) {
+                                                    if( (*it4)->getTS() != (*it3)->getTS() ) {
+                                                        cout << "Não é eqlav\n";
+                                                        breakLoop = true;
+                                                        notEquivalent
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        if(breakLoop) break;
+                                    }
+                                }
+                                if(breakLoop) break;
+                            }
+                        }
+                        if(breakLoop) break;
+                    }
+                    // Checa última escrita de cada atributo
+                    if(breakLoop) continue;
+                    for( auto it = )
+                } while( next_permutation( transactions.begin(), transactions.end() ) );
+                s->setViewEquivalent(true);
             }
 
             // Adiciona à lista de saídas
             this->schedules.push_back(s);
-            this->currentGraph = new Graph();
+            // Limpa grafo e listas
+            this->currentGraph->clear();
+            this->finalizedTransactionsIds.clear();
+            this->operations.clear();
+            this->transactions.clear();
         }
     }
 }
