@@ -29,8 +29,6 @@ Schedule::Schedule(vector<unsigned int> ids) {
         this->transactionsIds.push_back(ids[i]);
 }
 
-
-
 // ===================================================
 // ====== Tester =====================================
 
@@ -61,6 +59,7 @@ void Tester::newOp(Operation* op) {
     else { // Caso não exista, cria nova
         Transaction *T = new Transaction(op);
         this->transactions.push_back(*T);
+        this->currentGraph->createNode(op->getId());
     }
 
     // Verifica se é diferente de commit
@@ -79,7 +78,9 @@ void Tester::newOp(Operation* op) {
                 // Verifica se algum dos dois é uma escrita
                 if( (op->getAction() == WRITE) || opIter->getAction() == WRITE ) {
                     // Adiciona aresta de opIter para op
-                    cout << "Adiciona aresta de " << opIter->getId() << " para " << op->getId() << endl;
+                    Node *opNode = this->currentGraph->findNode(op->getId());
+                    this->currentGraph->findNode(opIter->getId())->addNode(opNode);
+                    // cout << "Adiciona aresta de " << opIter->getId() << " para " << op->getId() << endl;
                 }
             }
         }
@@ -104,10 +105,19 @@ void Tester::newOp(Operation* op) {
         if(this->activeTransactionsIds.size() < 1) {
             Schedule *s = new Schedule(this->finalizedTransactionsIds);
             // Verifica se há ciclo
-            // if() s->isSerializable();
+            if(this->currentGraph->findCycle()) {
+                s->setConflictSerial(true);
+                // Se for serializável por conflito, então também é por visão
+                s->setViewEquivalent(true);
+            }
+            else {
+                s->setConflictSerial(false);
+                s->setViewEquivalent(false);
+            }
 
             // Adiciona à lista de saídas
-            this->schedules.push_back(*s);
+            this->schedules.push_back(s);
+            this->currentGraph = new Graph();
         }
     }
 }

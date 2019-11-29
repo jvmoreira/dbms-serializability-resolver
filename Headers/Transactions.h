@@ -9,6 +9,8 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <bits/stdc++.h>
+#include "Graph.h"
 
 using namespace std;
 
@@ -56,14 +58,17 @@ public:
 // ====== Schedule ===================================
 
 class Schedule {
-    vector<unsigned int> transactionsIds;
     bool conflictSerial;
     bool viewEquivalent;
 public:
+    vector<unsigned int> transactionsIds;
     Schedule(vector<unsigned int> ids);
     void setConflictSerial(bool b) { this->conflictSerial = b; }
     void setViewEquivalent(bool b) { this->viewEquivalent = b; }
+    string isConflictSerial() { return this->conflictSerial ? "SS" : "NS"; }
+    string isViewEquivalent() { return this->viewEquivalent ? "SV" : "NV"; }
     void addTransaction(unsigned int id) { this->transactionsIds.push_back(id); }
+    stringstream outputString();
 };
 
 
@@ -75,9 +80,11 @@ class Tester {
     vector<Transaction> transactions;
     vector<unsigned int> activeTransactionsIds;
     vector<unsigned int> finalizedTransactionsIds;
-    vector<Schedule> schedules;
+    Graph *currentGraph;
 
 public:
+    vector<Schedule*> schedules;
+    Tester() { this->currentGraph = new Graph(); }
     bool isActive(unsigned int id);
     Transaction* findTransactionById(unsigned int id);
     void newOp(Operation* op);
