@@ -41,11 +41,12 @@ int main() {
     auto node1 = teste->createNode(10);
     auto node2 = teste->createNode(30);
     auto node3 = teste->createNode(20);
+    auto node4 = teste->createNode(5);
 
     node1->addNode(node2);
-    node2->addNode(node1);
-    node3->addNode(node1);
-    node3->addNode(node1);
+    node2->addNode(node3);
+    node3->addNode(node4);
+    node4->addNode(node1);
 
     printf("Ciclo encontrado: %d\n",teste->findCycle());
 

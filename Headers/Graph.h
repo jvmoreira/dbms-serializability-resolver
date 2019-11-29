@@ -34,5 +34,7 @@ public:
 
 	Node* createNode( unsigned int id );
 private:
+	bool isCyclic( vector<Node*>&visitedNodes, Node* node );
+private:
 	vector<Node*> nodes;
 };

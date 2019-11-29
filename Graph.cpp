@@ -21,17 +21,13 @@ Graph::~Graph()
 bool Graph::findCycle()
 {
 	//Verifica nó por nó para encontrar algum ciclo
-	for( const auto& node : nodes )
+	for( auto& node : nodes )
 	{
-		//Verifica os nós apontados
-		for( const auto& targetNode : node->getNodes() )
-		{
-			//Se algum nó que é apontado, apontar para o nó que está verificando, significa que encontramos um ciclo
-			//Logo podemos retornar true e sair do laço
-			for( const auto& childNode : targetNode->getNodes() )
-				if( childNode == node )
-					return true;
-		}
+		vector<Node*> visitedNodes;
+		visitedNodes.push_back(node);
+
+		if( isCyclic( visitedNodes, node ) )
+			return true;
 	}
 
 	return false;
@@ -43,4 +39,19 @@ Node* Graph::createNode( unsigned int id )
 	nodes.push_back(node);
 
 	return node;
+}
+
+bool Graph::isCyclic( vector<Node*>&visitedNodes, Node* node )
+{
+	for(auto& p : node->getNodes() )
+	{
+		visitedNodes.push_back(p);
+
+		if( p == visitedNodes[0] )
+			return true;
+
+		return isCyclic(visitedNodes,p);
+	}
+
+	return false;
 }
