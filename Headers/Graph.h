@@ -31,6 +31,7 @@ public:
 	~Graph();
 
 	bool findCycle();
+	Node* findNode( unsigned int id );
 
 	Node* createNode( unsigned int id );
 private:

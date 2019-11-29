@@ -18,6 +18,13 @@ Graph::~Graph()
 {
 }
 
+Node* Graph::findNode( unsigned int id ) {
+	for( auto& node : nodes )
+		if( node->getID() == id )
+			return node;
+	return nullptr;
+}
+
 bool Graph::findCycle()
 {
 	//Verifica nó por nó para encontrar algum ciclo
