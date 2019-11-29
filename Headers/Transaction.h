@@ -16,10 +16,6 @@ public:
     vector<Operation*>::iterator opList() { return this->operations.begin(); }
     vector<Operation*>::iterator listEnd() { return this->operations.end(); }
     vector<Operation*> getOperations() { return this->operations; }
-    void printOperations() { // === REMOVER ===
-        for(vector<Operation*>::iterator op = this->opList(); op != this->listEnd(); ++op)
-            (*op)->printOperation();
-    }
 private:
     unsigned int id;
     vector<Operation*> operations;

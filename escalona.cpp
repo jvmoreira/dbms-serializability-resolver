@@ -7,10 +7,6 @@
 #include "Graph.h"
 
 int main() {
-    cout << "=====================" << '\n'
-         << "Leitura de Transações" << '\n'
-         << "=====================" << "\n\n";
-
     SerializabilityResolver *solver = new SerializabilityResolver(cin);
     solver->writeSchedules(cout);
 

@@ -22,9 +22,6 @@ public:
     char getAttr() { return this->attribute; }
     unsigned int getTS() { return this->timestamp; }
     bool after(Operation T) { return this->getTS() > T.getTS(); }
-    void printOperation() { // === REMOVER ===
-        cout << "Ordem: " << getTS() << " | " << "T" << getId() << ' ' << getAction() << "(" << getAttr() << ")" << endl;
-    }
 private:
     unsigned int id;
     unsigned int transactionId;
