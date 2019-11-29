@@ -182,8 +182,9 @@ void Tester::newOp(Operation* op) {
                         if( op->getAction() == WRITE )
                             lastWroteValueSerial[op->getAttr()] = op->getTS();
 
-                    printf("%d\n",lastWroteValue['X']);
-                    printf("%d\n",lastWroteValueSerial['X']);
+                    for( const auto& p : lastWroteValue )
+                        if( lastWroteValue[p.first] != lastWroteValueSerial[p.first] )
+                            printf("klabum\n",);
 
                 } while( next_permutation( transactions.begin(), transactions.end() ) );
                 s->setViewEquivalent(true);
