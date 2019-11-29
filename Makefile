@@ -11,8 +11,9 @@ CXXFLAGS = -Wall -I Headers # -Wextra -Werror
 EXEC = escalona
 # Arquivos que serão compilados (sem a extensão)
 ARQUIVOS =	$(EXEC)				\
+			Operation			\
 			SerializabilityResolver	\
-			Transactions 	\
+			Tester 	\
 			Graph
 
 #Arquivos .o

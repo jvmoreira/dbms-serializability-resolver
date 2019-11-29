@@ -5,23 +5,12 @@
 
 #include "Graph.h"
 
-void Node::addNode( Node* node )
-{
-	nodes.push_back(node);
-}
-
-Graph::Graph()
-{
-}
-
-Graph::~Graph()
-{
-}
-
 Node* Graph::findNode( unsigned int id ) {
+	// Busca um nó pela sua ID
 	for( auto& node : nodes )
 		if( node->getID() == id )
 			return node;
+
 	return nullptr;
 }
 
@@ -33,6 +22,7 @@ bool Graph::findCycle()
 		vector<Node*> visitedNodes;
 		visitedNodes.push_back(node);
 
+		// Se for ciclico, retornar verdadeiro
 		if( isCyclic( visitedNodes, node ) )
 			return true;
 	}
@@ -42,6 +32,7 @@ bool Graph::findCycle()
 
 Node* Graph::createNode( unsigned int id )
 {
+	// Cria nó para o grafo
 	Node* node = new Node( id );
 	nodes.push_back(node);
 
@@ -50,6 +41,7 @@ Node* Graph::createNode( unsigned int id )
 
 void Graph::clear()
 {
+	// Limpa o grafo
 	for( auto& node : nodes )
 		delete node;
 
@@ -60,8 +52,10 @@ bool Graph::isCyclic( vector<Node*>&visitedNodes, Node* node )
 {
 	for(auto& p : node->getNodes() )
 	{
+		// Adiciona o nó atual para os nós visitados
 		visitedNodes.push_back(p);
 
+		// Se o nó que está verificado, foi o nó de origem, quer dizer que é ciclico
 		if( p == visitedNodes[0] )
 			return true;
 

@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "Transactions.h"
+#include "Tester.h"
 
 class SerializabilityResolver {
     Tester *tester;

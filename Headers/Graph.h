@@ -13,12 +13,12 @@ using namespace std;
 class Node
 {
 public:
+	//Construtor
 	Node(unsigned int id_) : id(id_),nodes{}{}
-	~Node(){}
 
 	unsigned int getID() const{ return id; }
 	const vector<Node*>& getNodes() const{ return nodes; }
-	void addNode( Node* node );
+	void addNode( Node* node ) { nodes.push_back(node); }
 private:
 	unsigned int id;
 	vector<Node*> nodes;
@@ -27,8 +27,8 @@ private:
 class Graph
 {
 public:
-	Graph();
-	~Graph();
+	//Construtor
+	Graph(){}
 
 	bool findCycle();
 	Node* findNode( unsigned int id );

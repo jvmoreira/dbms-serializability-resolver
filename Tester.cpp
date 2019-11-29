@@ -3,34 +3,7 @@
 // >> UFPR 2019 - Igor Segalla Farias - GRR20176543 <<
 // ====================================================
 
-#include "Transactions.h"
-
-// ===================================================
-// ====== Operation ==================================
-
-Operation::Operation(string operationDef) {
-    stringstream definition(operationDef);
-    string tokens[4], *token = tokens;
-    while( getline(definition, *(token++), ' ') );
-    (stringstream) tokens[0] >> timestamp;
-    (stringstream) tokens[1] >> transactionId;
-    action = *(tokens[2].c_str());
-    attribute = *(tokens[3].c_str());
-}
-
-
-
-// ===================================================
-// ====== Schedule ===================================
-
-Schedule::Schedule(vector<unsigned int> ids) {
-    // Cria schedule com os ids
-    for(unsigned int i = 0; i < ids.size(); ++i)
-        this->transactionsIds.push_back(ids[i]);
-}
-
-// ===================================================
-// ====== Tester =====================================
+#include "Tester.h"
 
 // Verifica se existe uma transação ativa com determinado id
 bool Tester::isActive(unsigned int id) {
@@ -48,6 +21,28 @@ Transaction* Tester::findTransactionById(unsigned int id) {
     }
     return 0;
 };
+
+vector<Operation*>::iterator Tester::findOperationByTS(unsigned int TS)
+{
+     for( auto it = operations.begin(); it != operations.end(); ++it )
+        if( (*it)->getTS() == TS )
+            return it;
+
+     return operations.end();
+}
+
+vector<Operation*> Tester::getSerialOperations()
+{
+    vector<Operation*> serialOperations;
+
+    // Deixa as operações em serial
+    for( auto& T : this->transactions ) {
+        for( auto& op : T->getOperations() )
+            serialOperations.push_back(op);
+    }
+
+    return serialOperations;
+}
 
 // Função chamada ao receber uma nova operação
 void Tester::newOp(Operation* op) {
@@ -110,6 +105,7 @@ void Tester::newOp(Operation* op) {
             if(!this->currentGraph->findCycle()) {
                 // Se não há ciclo, então é serializável por conflito
                 s->setConflictSerial(true);
+                
                 // Se for serializável por conflito, então também é por visão
                 s->setViewEquivalent(true);
             }
@@ -120,55 +116,66 @@ void Tester::newOp(Operation* op) {
                 bool viewEquivalent = true;
                 do {
                     // Cria lista de operações com transações em série
-                    vector<Operation*> serialOperations;
-                    for( auto& T : this->transactions ) {
-                        for( auto& op : T->getOperations() )
-                            serialOperations.push_back(op);
-                    }
-                    bool breakLoop;
+                    vector<Operation*> serialOperations = getSerialOperations();
+                    bool breakLoop = false;
+
                     // Itera pelas operações em séries, buscando por operação de leitura
-                    for( auto it = serialOperations.begin(); it != serialOperations.end(); ++it ) {
+                    for( auto it = serialOperations.begin(); it != serialOperations.end(); ++it ) 
+                    {
                         breakLoop = false;
                         auto op = *it;
-                        if(op->getAction() == READ) {
+
+                        // Verifica se duas operações realizam escrita sobre o mesmo atributo, e são operações diferentes
+                        auto IsDiffOperation = [](auto op1, auto op2)
+                        {
+                            if( op2->getId() != op1->getId() && op2->getAttr() == op1->getAttr() && op2->getAction() == WRITE )
+                                return true;
+
+                            return false;
+                        };
+
+                        // Operação de leitura
+                        if(op->getAction() == READ) 
+                        {
                             // Busca operação correspondente na entrada original
-                            for( auto it2 = operations.begin(); it2 != operations.end(); ++it2 ) {
-                                if( (*it2)->getTS() == op->getTS() ) {
-                                    // Busca primeira escrita do mesmo atributo por transação diferente
-                                    for( auto it3 = it2; it3 != operations.begin()-1; --it3 ) {
-                                        if( ((*it3)->getId() != op->getId()) && ((*it3)->getAttr() == op->getAttr()) && ((*it3)->getAction() == WRITE) ) {
-                                            (*it3)->printOperation();
-                                            // Busca pela escrita no mesmo atributo anterior à op em serialOperations
-                                            bool writeFound = false;
-                                            for( auto it4 = it; it4 != serialOperations.begin()-1; --it4) {
-                                                if( ((*it4)->getId() != op->getId()) && ((*it4)->getAttr() == op->getAttr()) && ((*it4)->getAction() == WRITE) ) {
-                                                    writeFound = true;
-                                                    if( (*it4)->getTS() != (*it3)->getTS() ) {
-                                                        breakLoop = true;
-                                                        break;
-                                                    }
-                                                }
+                            auto originalIt = findOperationByTS( op->getTS() );
+
+                            // Busca primeira escrita do mesmo atributo por transação diferente
+                            for( auto reverseIt = originalIt; reverseIt != operations.begin()-1; --reverseIt ) 
+                            {
+                                //Verifica se a operação é de escrita sobre o mesmo atributo
+                                if( IsDiffOperation( op, (*reverseIt) ) ) 
+                                {
+                                    // Busca pela escrita no mesmo atributo anterior à op em serialOperations
+                                    bool writeFound = false;
+                                    for( auto serialIt = it; serialIt != serialOperations.begin()-1; --serialIt ) 
+                                    {
+                                        // Verifica se a operação é de escrita sobre o mesmo atributo
+                                        if( IsDiffOperation( op, (*serialIt) ) ) 
+                                        {
+                                            writeFound = true;
+
+                                            if( (*serialIt)->getTS() != (*reverseIt)->getTS() ) 
+                                            {
+                                                breakLoop = true;
+                                                break;
                                             }
-                                            if(!writeFound) breakLoop = true;
                                         }
-                                        if(breakLoop) break;
                                     }
+                                    if(!writeFound) breakLoop = true;
                                 }
                                 if(breakLoop) break;
                             }
+                            if(breakLoop) break;
                         }
                         if(breakLoop) break;
                     }
+
                     // Checa última escrita de cada atributo
                     if(breakLoop) {
                         viewEquivalent = false;
                         continue;
                     }
-
-                    cout << endl << endl;
-                    for( const auto& op : serialOperations )
-                        op->printOperation();
-                    cout << endl << endl;
 
                     // Guarda o TS da ultima OP que escreveu em determinado atributo
                     unordered_map<char,unsigned int> lastWroteValue;
@@ -199,6 +206,7 @@ void Tester::newOp(Operation* op) {
 
             // Adiciona à lista de saídas
             this->schedules.push_back(s);
+
             // Limpa grafo e listas
             this->currentGraph->clear();
             this->operations.clear();

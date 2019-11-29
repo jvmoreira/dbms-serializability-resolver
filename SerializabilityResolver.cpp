@@ -4,11 +4,10 @@
 // ====================================================
 
 #include "SerializabilityResolver.h"
-#include "Transactions.h"
+#include "Tester.h"
 
 /* Lê as transições recebidas */
 SerializabilityResolver::SerializabilityResolver(istream& transactions) {
-    // this->schedule = new Schedule();
     this->tester = new Tester();
 
     // A função getline() retorna uma linha de transactions em line
@@ -21,10 +20,12 @@ SerializabilityResolver::SerializabilityResolver(istream& transactions) {
 
 void SerializabilityResolver::writeSchedules(ostream& output) {
     int cont = 1;
-    for( auto& schedule : this->tester->schedules ) {
+    for( auto& schedule : this->tester->getSchedules() ) {
+
         stringstream s;
-        for( auto id : schedule->transactionsIds )
-            s << id << ",";
+        for( unsigned int i = 0; i < schedule->getTransactionIds().size(); i++ )
+            s << schedule->getTransactionIds()[i] << (i == schedule->getTransactionIds().size()-1 ? "" : ",");
+
         output << cont++ <<  " " << s.str() << " " << schedule->isConflictSerial() << " " << schedule->isViewEquivalent() << endl;
     }
 }
