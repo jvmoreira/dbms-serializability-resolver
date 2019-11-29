@@ -137,15 +137,17 @@ void Tester::newOp(Operation* op) {
                                         if( ((*it3)->getId() != op->getId()) && ((*it3)->getAttr() == op->getAttr()) && ((*it3)->getAction() == WRITE) ) {
                                             (*it3)->printOperation();
                                             // Busca pela escrita no mesmo atributo anterior à op em serialOperations
+                                            bool writeFound = false;
                                             for( auto it4 = it; it4 != serialOperations.begin()-1; --it4) {
                                                 if( ((*it4)->getId() != op->getId()) && ((*it4)->getAttr() == op->getAttr()) && ((*it4)->getAction() == WRITE) ) {
+                                                    writeFound = true;
                                                     if( (*it4)->getTS() != (*it3)->getTS() ) {
-                                                        cout << "Não é eqlav\n";
                                                         breakLoop = true;
                                                         break;
                                                     }
                                                 }
                                             }
+                                            if(!writeFound) breakLoop = true;
                                         }
                                         if(breakLoop) break;
                                     }
@@ -156,7 +158,15 @@ void Tester::newOp(Operation* op) {
                         if(breakLoop) break;
                     }
                     // Checa última escrita de cada atributo
-                    if(breakLoop) continue;
+                    if(breakLoop) {
+                        cout << "Não é eqlav\n";
+                        continue;
+                    }
+
+                    cout << endl << endl;
+                    for( const auto& op : serialOperations )
+                        op->printOperation();
+                    cout << endl << endl;
 
                     // Guarda o TS da ultima OP que escreveu em determinado atributo
                     unordered_map<char,unsigned int> lastWroteValue;
@@ -174,7 +184,7 @@ void Tester::newOp(Operation* op) {
 
                     printf("%d\n",lastWroteValue['X']);
                     printf("%d\n",lastWroteValueSerial['X']);
-                    
+
                 } while( next_permutation( transactions.begin(), transactions.end() ) );
                 s->setViewEquivalent(true);
             }
