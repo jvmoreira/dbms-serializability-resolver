@@ -48,6 +48,14 @@ Node* Graph::createNode( unsigned int id )
 	return node;
 }
 
+void Graph::clear()
+{
+	for( auto& node : nodes )
+		delete node;
+
+	nodes.clear();
+}
+
 bool Graph::isCyclic( vector<Node*>&visitedNodes, Node* node )
 {
 	for(auto& p : node->getNodes() )
